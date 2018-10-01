@@ -1,0 +1,3 @@
+include ':matcher:core'
+include ':router:core'
+include ':navigator:core'
