@@ -7,43 +7,52 @@ class TestNavigator(
     private val navigator: Navigator
 ) {
 
-    val route get() = handler.route
-    val params get() = handler.params
-    val direction get() = handler.direction
-
     fun set(routes: Collection<URI>): Boolean {
         return navigator.set(routes)
     }
 
-    fun push(route: URI): Boolean {
-        return navigator.push(route)
+    fun push(route: URI): Result {
+        return Result(
+            navigator.push(route),
+            handler.request
+        )
     }
 
-    fun pop(): Boolean {
-        return navigator.pop()
+    fun pop(): Result {
+        return Result(
+            navigator.pop(),
+            handler.request
+        )
     }
 
-    fun popTo(route: URI): Boolean {
-        return navigator.popTo(route)
+    fun popTo(route: URI): Result {
+        return Result(
+            navigator.popTo(route),
+            handler.request
+        )
     }
 
-    fun popToRoot(): Boolean {
-        return navigator.popToRoot()
+    fun popToRoot(): Result {
+        return Result(
+            navigator.popToRoot(),
+            handler.request
+        )
     }
 
     class Handler : Router.Handler<Navigator.Request> {
 
-        var route = URI("")
-        var params = emptyMap<String, Any?>()
-        var direction = Navigator.Direction.REPLACE
+        lateinit var request: Navigator.Request
 
         override fun handle(request: Navigator.Request) {
-            this.route = request.route
-            this.params = request.params
-            this.direction = request.direction
+            this.request = request
         }
 
     }
+
+    class Result(
+        val handled: Boolean,
+        val request: Navigator.Request
+    )
 
     companion object {
 
@@ -53,4 +62,5 @@ class TestNavigator(
         }
 
     }
+
 }

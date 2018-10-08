@@ -1,7 +1,7 @@
 package max
 
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.describe
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 class MatcherTest : Spek({
     describe("Matcher") {

@@ -2,15 +2,13 @@ package max
 
 import com.google.common.truth.Truth.assertThat
 import max.Navigator.Direction
-import org.jetbrains.spek.api.dsl.SpecBody
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.style.specification.Suite
 import java.net.URI
 
 enum class Action(
     val functionName: String,
     val direction: Navigator.Direction,
-    val call: (TestNavigator, URI) -> Boolean
+    val call: (TestNavigator, URI) -> TestNavigator.Result
 ) {
     PUSH("push", Direction.FORWARD, { navigator, route -> navigator.push(route) }),
     POP("pop", Direction.BACKWARD, { navigator, _ -> navigator.pop() }),
@@ -18,65 +16,65 @@ enum class Action(
     POP_TO_ROOT("popToRoot", Direction.BACKWARD, { navigator, _ -> navigator.popToRoot() })
 }
 
-fun SpecBody.shouldPush(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldPush(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(true, navigator, Action.PUSH, route, captures.toMap())
 }
 
-fun SpecBody.shouldPop(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldPop(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(true, navigator, Action.POP, route, captures.toMap())
 }
 
-fun SpecBody.shouldPopTo(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldPopTo(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(true, navigator, Action.POP_TO, route, captures.toMap())
 }
 
-fun SpecBody.shouldPopToRoot(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldPopToRoot(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(true, navigator, Action.POP_TO_ROOT, route, captures.toMap())
 }
 
-fun SpecBody.shouldNotPush(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldNotPush(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(false, navigator, Action.PUSH, route, captures.toMap())
 }
 
-fun SpecBody.shouldNotPop(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldNotPop(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(false, navigator, Action.POP, route, captures.toMap())
 }
 
-fun SpecBody.shouldNotPopTo(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldNotPopTo(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(false, navigator, Action.POP_TO, route, captures.toMap())
 }
 
-fun SpecBody.shouldNotPopToRoot(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
+fun Suite.shouldNotPopToRoot(navigator: TestNavigator, route: URI, vararg captures: Pair<String, Any>) {
     return should(false, navigator, Action.POP_TO_ROOT, route, captures.toMap())
 }
 
-fun SpecBody.should(
+fun Suite.should(
     should: Boolean,
     navigator: TestNavigator,
     action: Action,
     route: URI,
     captures: Map<String, Any>
 ) {
-    on("${action.functionName} of '$route'") {
-        val did = action.call(navigator, route)
+    context("on ${action.functionName} of '$route'") {
+        val result = action.call(navigator, route)
         if (should) {
-            it("should handle the route") {
-                assertThat(did).isTrue()
+            it("it should handle the route") {
+                assertThat(result.handled).isTrue()
             }
-            it("should have a top route of '$route'") {
-                assertThat(route).isEqualTo(navigator.route)
+            it("it should have a top route of '$route'") {
+                assertThat(result.request.route).isEqualTo(route)
             }
-            it("should have top params of '$captures'") {
+            it("it should have top params of '$captures'") {
+                val actual = normalizeForComparison(result.request.params)
                 val expected = normalizeForComparison(captures)
-                val actual = normalizeForComparison(navigator.params)
-                assertThat(expected).isEqualTo(actual)
+                assertThat(actual).isEqualTo(expected)
             }
-            it("should have direction of '${action.direction}'") {
-                assertThat(action.direction).isEqualTo(navigator.direction)
+            it("it should have direction of '${action.direction}'") {
+                assertThat(result.request.direction).isEqualTo(action.direction)
             }
         } else {
-            it("should not handle the route") {
-                assertThat(did).isFalse()
+            it("it should not handle the route") {
+                assertThat(result.handled).isFalse()
             }
         }
     }

@@ -4,11 +4,8 @@ ext {
             // lib
             kotlin: '1.2.71',
             // test
-            google: [
-                    truth: '0.42'
-            ],
-            junit : '1.3.1',
-            spek  : '1.2.1'
+            spek  : '2.0.0-rc.1',
+            truth : '0.42'
     ]
 
     libs = [
@@ -17,14 +14,11 @@ ext {
                     stdlib: "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
             ],
             // test
-            junit : [
-                    jUnitPlatformRunner: "org.junit.platform:junit-platform-runner:$versions.junit"
-            ],
             spek  : [
-                    api                : "org.jetbrains.spek:spek-api:$versions.spek",
-                    jUnitPlatformEngine: "org.jetbrains.spek:spek-junit-platform-engine:$versions.spek"
+                    dsl   : "org.spekframework.spek2:spek-dsl-jvm:$versions.spek",
+                    runner: "org.spekframework.spek2:spek-runner-junit5:$versions.spek"
             ],
-            truth : "com.google.truth:truth:$versions.google.truth"
+            truth : "com.google.truth:truth:$versions.truth"
     ]
 
 }

@@ -1,29 +1,27 @@
 package max
 
 import com.google.common.truth.Truth.assertThat
-import org.jetbrains.spek.api.dsl.SpecBody
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.style.specification.Suite
 
-fun SpecBody.matcher(pattern: String, body: SpecBody.(Matcher) -> Unit) {
-    given("a matcher of '$pattern'") {
+fun Suite.matcher(pattern: String, body: Suite.(Matcher) -> Unit) {
+    describe("a matcher of '$pattern'") {
         body(Matcher.create(pattern))
     }
 }
 
-fun SpecBody.pattern(pattern: String, body: SpecBody.(String) -> Unit) {
-    group("on pattern of '$pattern'") {
+fun Suite.pattern(pattern: String, body: Suite.(String) -> Unit) {
+    describe("on pattern of '$pattern'") {
         body(pattern)
     }
 }
 
-fun SpecBody.shouldMatch(matcher: Matcher, pattern: String, vararg captures: Pair<String, Any>) =
+fun Suite.shouldMatch(matcher: Matcher, pattern: String, vararg captures: Pair<String, Any>) =
     matching(matcher, pattern, true, if (captures.isNotEmpty()) captures.toMap() else null)
 
-fun SpecBody.shouldNotMatch(matcher: Matcher, pattern: String) =
+fun Suite.shouldNotMatch(matcher: Matcher, pattern: String) =
     matching(matcher, pattern, false, null)
 
-private fun SpecBody.matching(matcher: Matcher, pattern: String, matches: Boolean, captures: Map<String, Any>?) {
+private fun Suite.matching(matcher: Matcher, pattern: String, matches: Boolean, captures: Map<String, Any>?) {
     pattern(pattern) {
         if (matches) {
             it("should match '$it'") {
