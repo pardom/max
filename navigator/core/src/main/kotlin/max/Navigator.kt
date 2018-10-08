@@ -19,7 +19,7 @@ class Navigator private constructor(
             ?: throw IllegalStateException("Top route not found in router.")
 
     fun set(routes: Collection<URI>): Boolean {
-        creator.direction = Direction.REPLACE
+        creator.onSet()
         if (routes.isEmpty()) {
             throw IllegalArgumentException("Navigator stack must not be empty.")
         }
@@ -32,7 +32,7 @@ class Navigator private constructor(
     }
 
     fun push(route: URI): Boolean {
-        creator.direction = Direction.FORWARD
+        creator.onPush()
         if (topRoute != route && router.handle(route)) {
             return stack.add(route)
         }
@@ -40,7 +40,7 @@ class Navigator private constructor(
     }
 
     fun pop(): Boolean {
-        creator.direction = Direction.BACKWARD
+        creator.onPop()
         if (stack.size > 1) {
             stack.removeAt(stack.lastIndex)
             return router.handle(stack.last())
@@ -49,7 +49,7 @@ class Navigator private constructor(
     }
 
     fun popTo(route: URI): Boolean {
-        creator.direction = Direction.BACKWARD
+        creator.onPop()
         while (stack.size > 1 && stack.last() != route) {
             stack.removeAt(stack.lastIndex)
             if (!router.handle(stack.last())) {
@@ -70,15 +70,34 @@ class Navigator private constructor(
     data class Request(
         override val route: URI,
         override val params: Map<String, Any?>,
+        val prevRoute: URI,
+        val prevParams: Map<String, Any?>,
         val direction: Direction
     ) : Router.Request {
 
         class Creator : Router.Request.Creator<Request> {
 
-            var direction: Direction = Direction.REPLACE
+            private var route: URI = URI("")
+            private var params: Map<String, Any?> = emptyMap()
+            private var direction: Direction = Direction.REPLACE
+
+            fun onSet() {
+                direction = Direction.REPLACE
+            }
+
+            fun onPush() {
+                direction = Direction.FORWARD
+            }
+
+            fun onPop() {
+                direction = Direction.BACKWARD
+            }
 
             override fun create(route: URI, params: Map<String, Any?>): Request {
-                return Request(route, params, direction)
+                val request = Request(route, params, this.route, this.params, direction)
+                this.route = route
+                this.params = params
+                return request
             }
 
         }
