@@ -8,7 +8,11 @@ class Navigator private constructor(
     private val creator: Request.Creator
 ) {
 
-    private val stack = mutableListOf(initialRoute)
+    private val stack = mutableListOf<URI>()
+
+    init {
+        set(initialRoute)
+    }
 
     val topRoute: URI
         get() = stack.lastOrNull()
@@ -17,6 +21,10 @@ class Navigator private constructor(
     val topParams: Map<String, Any?>
         get() = router.routerFor(topRoute)?.match(topRoute)
             ?: throw IllegalStateException("Top route not found in router.")
+
+    fun set(vararg routes: URI): Boolean {
+        return set(routes.toList())
+    }
 
     fun set(routes: Collection<URI>): Boolean {
         creator.onSet()

@@ -10,6 +10,8 @@ buildscript {
 }
 
 subprojects {
+    version = VERSION_NAME
+
     repositories {
         jcenter()
         maven { url 'https://dl.bintray.com/jetbrains/spek' }

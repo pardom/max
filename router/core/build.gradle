@@ -4,7 +4,7 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
 dependencies {
-    api project(':matcher:core')
+    implementation "com.michaelpardo:max-matcher:$version"
 
     implementation libs.kotlin.stdlib
 

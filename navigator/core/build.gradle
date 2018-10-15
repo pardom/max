@@ -4,8 +4,8 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
 dependencies {
-    api project(':matcher:core')
-    api project(':router:core')
+    implementation "com.michaelpardo:max-matcher:$version"
+    implementation "com.michaelpardo:max-router:$version"
 
     implementation libs.kotlin.stdlib
 
