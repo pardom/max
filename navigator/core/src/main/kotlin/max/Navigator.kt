@@ -31,6 +31,7 @@ class Navigator private constructor(
         if (routes.isEmpty()) {
             throw IllegalArgumentException("Navigator stack must not be empty.")
         }
+        stack.clear()
         for (route in routes) {
             if (!stack.add(route)) {
                 return false
