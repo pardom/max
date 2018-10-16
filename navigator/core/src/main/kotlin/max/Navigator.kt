@@ -2,75 +2,27 @@ package max
 
 import java.net.URI
 
-class Navigator private constructor(
-    initialRoute: URI,
-    private val router: Router<Request>,
-    private val creator: Request.Creator
-) {
+interface Navigator {
 
-    private val stack = mutableListOf<URI>()
+    fun routes(): Collection<URI>
 
-    init {
-        set(initialRoute)
-    }
+    fun top(): URI
 
-    val topRoute: URI
-        get() = stack.lastOrNull()
-            ?: throw IllegalStateException("Route stack is empty.")
+    fun params(): Map<String, Any?>
 
-    val topParams: Map<String, Any?>
-        get() = router.routerFor(topRoute)?.match(topRoute)
-            ?: throw IllegalStateException("Top route not found in router.")
+    fun param(name: String): Any?
 
-    fun set(vararg routes: URI): Boolean {
-        return set(routes.toList())
-    }
+    fun set(vararg routes: URI): Boolean
 
-    fun set(routes: Collection<URI>): Boolean {
-        creator.onSet()
-        if (routes.isEmpty()) {
-            throw IllegalArgumentException("Navigator stack must not be empty.")
-        }
-        stack.clear()
-        for (route in routes) {
-            if (!stack.add(route)) {
-                return false
-            }
-        }
-        return router.handle(topRoute)
-    }
+    fun set(routes: Collection<URI>): Boolean
 
-    fun push(route: URI): Boolean {
-        creator.onPush()
-        if (topRoute != route && router.handle(route)) {
-            return stack.add(route)
-        }
-        return false
-    }
+    fun push(route: URI): Boolean
 
-    fun pop(): Boolean {
-        creator.onPop()
-        if (stack.size > 1) {
-            stack.removeAt(stack.lastIndex)
-            return router.handle(stack.last())
-        }
-        return false
-    }
+    fun pop(): Boolean
 
-    fun popTo(route: URI): Boolean {
-        creator.onPop()
-        while (stack.size > 1 && stack.last() != route) {
-            stack.removeAt(stack.lastIndex)
-            if (!router.handle(stack.last())) {
-                return false
-            }
-        }
-        return true
-    }
+    fun popTo(route: URI): Boolean
 
-    fun popToRoot(): Boolean {
-        return popTo(URI(""))
-    }
+    fun popToRoot(): Boolean
 
     enum class Direction {
         FORWARD, BACKWARD, REPLACE
@@ -113,11 +65,95 @@ class Navigator private constructor(
 
     }
 
+    private class Impl(
+        initialRoute: URI,
+        private val router: Router<Request>,
+        private val creator: Request.Creator
+    ) : Navigator {
+
+        private val stack = mutableListOf<URI>()
+
+        init {
+            set(initialRoute)
+        }
+
+        override fun routes(): Collection<URI> {
+            return stack
+        }
+
+        override fun top(): URI {
+            return routes().lastOrNull()
+                ?: throw IllegalStateException("Route stack is empty.")
+        }
+
+        override fun params(): Map<String, Any?> {
+            return router.routerFor(top())?.match(top())
+                ?: throw IllegalStateException("Top route not found in router.")
+        }
+
+        override fun param(name: String): Any? {
+            return params()[name]
+        }
+
+        override fun set(vararg routes: URI): Boolean {
+            return set(routes.toList())
+        }
+
+        override fun set(routes: Collection<URI>): Boolean {
+            creator.onSet()
+            if (routes.isEmpty()) {
+                throw IllegalArgumentException("Navigator stack must not be empty.")
+            }
+            stack.clear()
+            for (route in routes) {
+                if (!stack.add(route)) {
+                    return false
+                }
+            }
+            return router.handle(top())
+        }
+
+        override fun push(route: URI): Boolean {
+            creator.onPush()
+            if (top() != route && router.handle(route)) {
+                return stack.add(route)
+            }
+            return false
+        }
+
+        override fun pop(): Boolean {
+            creator.onPop()
+            if (stack.size > 1) {
+                stack.removeAt(stack.lastIndex)
+                return router.handle(stack.last())
+            }
+            return false
+        }
+
+        override fun popTo(route: URI): Boolean {
+            creator.onPop()
+            while (stack.size > 1 && stack.last() != route) {
+                stack.removeAt(stack.lastIndex)
+                if (!router.handle(stack.last())) {
+                    return false
+                }
+            }
+            return true
+        }
+
+        override fun popToRoot(): Boolean {
+            return popTo(URI(""))
+        }
+
+    }
+
     companion object {
+
+        const val SPLAT = Matcher.SPLAT
 
         operator fun invoke(initialRoute: URI, init: RouterBody<Navigator.Request>.() -> Unit): Navigator {
             val creator = Request.Creator()
-            return Navigator(initialRoute, Router(init, creator), creator)
+            return Impl(initialRoute, Router(init, creator), creator)
         }
 
     }

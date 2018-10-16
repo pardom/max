@@ -33,9 +33,11 @@ private fun Suite.matching(router: TestRouter, uri: URI, handled: Boolean, captu
 
 private fun normalizeForComparison(map: Map<*, *>): Map<*, *> {
     val normalized = map.toMutableMap()
-    normalized[Matcher.PARAM_SPLAT] =
-            if (normalized.containsKey(Matcher.PARAM_SPLAT))
-                (normalized[Matcher.PARAM_SPLAT] as Array<*>).toMutableList()
-            else mutableListOf<String>()
+    normalized[Router.SPLAT] =
+            if (normalized.containsKey(Router.SPLAT)) {
+                (normalized[Router.SPLAT] as Array<*>).toMutableList()
+            } else {
+                mutableListOf<String>()
+            }
     return normalized
 }

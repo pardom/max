@@ -2,70 +2,15 @@ package max
 
 import java.net.URI
 
-class Router<T : Router.Request> private constructor(
-    private val matcher: Matcher,
-    private val handler: Handler<T>?,
-    private val creator: Request.Creator<T>
-) : RouterBody<T> {
+interface Router<T : Router.Request> : RouterBody<T> {
 
-    private val children = mutableListOf<Router<T>>()
+    fun handle(route: URI): Boolean
 
-    fun handle(route: URI): Boolean {
-        val router = routerFor(route)
-        if (router?.handler != null) {
-            val request = creator.create(route, router.match(route))
-            router.handler.handle(request)
-            return true
-        }
-        return false
-    }
+    fun routerFor(route: URI): Router<T>?
 
-    fun routerFor(route: URI): Router<T>? {
-        for (child in children) {
-            val router = child.routerFor(route)
-            if (router != null) {
-                return router
-            }
-        }
-        if (matches(route)) {
-            return this
-        }
-        return null
-    }
+    fun match(route: URI): Map<String, Any?>
 
-    fun match(route: URI): Map<String, Any?> {
-        return matcher.match(route.path) + parseQuery(route)
-    }
-
-    fun matches(route: URI): Boolean {
-        return matcher.matches(route.path)
-    }
-
-    override fun path(path: String, init: RouterBody<T>.() -> Unit) {
-        val router = Router(Matcher.create(path, matcher), null, creator)
-        router.init()
-        addChild(router)
-    }
-
-    override fun route(path: String, handler: Handler<T>) {
-        val router = Router(Matcher.create(path, matcher), handler, creator)
-        addChild(router)
-    }
-
-    private fun addChild(route: Router<T>): Router<T> {
-        children.add(route)
-        return this
-    }
-
-    private fun parseQuery(route: URI): Map<String, Any?> {
-        return route.query
-            ?.split(',')
-            ?.fold(emptyMap()) { map, param ->
-                val (key, value) = param.split('=')
-                map + (key to value)
-            }
-            ?: emptyMap()
-    }
+    fun matches(route: URI): Boolean
 
     interface Handler<in T : Request> {
 
@@ -115,14 +60,83 @@ class Router<T : Router.Request> private constructor(
 
     }
 
+    private class Impl<T : Router.Request>(
+        private val matcher: Matcher,
+        private val handler: Handler<T>?,
+        private val creator: Request.Creator<T>
+    ) : Router<T> {
+
+        private val children = mutableListOf<Impl<T>>()
+
+        override fun handle(route: URI): Boolean {
+            val router = routerFor(route)
+            if (router?.handler != null) {
+                val request = creator.create(route, router.match(route))
+                router.handler.handle(request)
+                return true
+            }
+            return false
+        }
+
+        override fun routerFor(route: URI): Impl<T>? {
+            for (child in children) {
+                val router = child.routerFor(route)
+                if (router != null) {
+                    return router
+                }
+            }
+            if (matches(route)) {
+                return this
+            }
+            return null
+        }
+
+        override fun match(route: URI): Map<String, Any?> {
+            return matcher.match(route.path) + parseQuery(route)
+        }
+
+        override fun matches(route: URI): Boolean {
+            return matcher.matches(route.path)
+        }
+
+        override fun path(path: String, init: RouterBody<T>.() -> Unit) {
+            val router = Impl(matcher.create(path), null, creator)
+            router.init()
+            addChild(router)
+        }
+
+        override fun route(path: String, handler: Handler<T>) {
+            val router = Impl(matcher.create(path), handler, creator)
+            addChild(router)
+        }
+
+        private fun addChild(route: Impl<T>): Impl<T> {
+            children.add(route)
+            return this
+        }
+
+        private fun parseQuery(route: URI): Map<String, Any?> {
+            return route.query
+                ?.split(',')
+                ?.fold(emptyMap()) { map, param ->
+                    val (key, value) = param.split('=')
+                    map + (key to value)
+                }
+                ?: emptyMap()
+        }
+
+    }
+
     companion object {
+
+        const val SPLAT = Matcher.SPLAT
 
         operator fun invoke(init: RouterBody<out Request>.() -> Unit): Router<out Request> {
             return invoke(init, Request.Creator.default())
         }
 
         operator fun <T : Request> invoke(init: RouterBody<T>.() -> Unit, creator: Request.Creator<T>): Router<T> {
-            val router = Router(Matcher.empty(), Handler.unknown(), creator)
+            val router = Impl(Matcher.empty(), Handler.unknown(), creator)
             router.init()
             return router
         }

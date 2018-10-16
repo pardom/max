@@ -82,9 +82,11 @@ fun Suite.should(
 
 private fun normalizeForComparison(map: Map<*, *>): Map<*, *> {
     val normalized = map.toMutableMap()
-    normalized[Matcher.PARAM_SPLAT] =
-            if (normalized.containsKey(Matcher.PARAM_SPLAT))
-                (normalized[Matcher.PARAM_SPLAT] as Array<*>).toMutableList()
-            else mutableListOf<String>()
+    normalized[Navigator.SPLAT] =
+            if (normalized.containsKey(Navigator.SPLAT)) {
+                (normalized[Navigator.SPLAT] as Array<*>).toMutableList()
+            } else {
+                mutableListOf<String>()
+            }
     return normalized
 }

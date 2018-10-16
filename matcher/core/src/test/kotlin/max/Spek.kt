@@ -44,9 +44,11 @@ private fun Suite.matching(matcher: Matcher, pattern: String, matches: Boolean, 
 
 private fun normalizeForComparison(map: Map<*, *>): Map<*, *> {
     val normalized = map.toMutableMap()
-    normalized[Matcher.PARAM_SPLAT] =
-            if (normalized.containsKey(Matcher.PARAM_SPLAT))
-                (normalized[Matcher.PARAM_SPLAT] as Array<*>).toMutableList()
-            else mutableListOf<String>()
+    normalized[Matcher.SPLAT] =
+            if (normalized.containsKey(Matcher.SPLAT)) {
+                (normalized[Matcher.SPLAT] as Array<*>).toMutableList()
+            } else {
+                mutableListOf<String>()
+            }
     return normalized
 }
