@@ -18,6 +18,6 @@ class RouterTest : Spek({
         shouldNotHandle(router, URI("max://router/foo/bar/"))
         shouldHandle(router, URI("max://router/foo/bar/baz"))
         shouldHandle(router, URI("max://router/foo/bar/baz/"))
-        shouldHandle(router, URI("max://router/foo/bar?baz=qux"), "baz" to "qux")
+        shouldHandle(router, URI("max://router/foo/bar?a=1&b=2&c=3"), "a" to "1", "b" to "2", "c" to "3")
     }
 })

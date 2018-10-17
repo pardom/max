@@ -1,7 +1,6 @@
 package max
 
 import java.lang.IllegalArgumentException
-import javax.print.DocFlavor.STRING
 
 interface Matcher {
 

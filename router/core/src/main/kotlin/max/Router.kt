@@ -122,7 +122,7 @@ interface Router<T : Router.Request> : RouterBody<T> {
 
         private fun parseQuery(route: URI): Map<String, String> {
             return route.query
-                ?.split(',')
+                ?.split('&')
                 ?.fold(emptyMap()) { map, param ->
                     val (key, value) = param.split('=')
                     map + (key to value)
