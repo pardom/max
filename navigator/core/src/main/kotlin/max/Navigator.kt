@@ -111,49 +111,65 @@ interface Navigator {
         }
 
         override fun set(routes: Collection<URI>): Boolean {
-            creator.onSet()
             if (routes.isEmpty()) {
                 throw IllegalArgumentException("Navigator stack must not be empty.")
             }
-            stack.clear()
             for (route in routes) {
-                if (!stack.add(route)) {
+                if (!hasRouter(route)) {
                     return false
                 }
             }
-            return router.handle(top())
+            stack.clear()
+            stack.addAll(routes)
+            creator.onSet()
+            router.handle(top())
+            return true
         }
 
         override fun push(route: URI): Boolean {
-            creator.onPush()
-            if (top() != route && router.handle(route)) {
-                return stack.add(route)
+            if (top() == route) {
+                return false
             }
-            return false
+            if (!hasRouter(route)) {
+                return false
+            }
+            stack.add(route)
+            creator.onPush()
+            router.handle(route)
+            return true
         }
 
         override fun pop(): Boolean {
-            creator.onPop()
-            if (stack.size > 1) {
-                stack.removeAt(stack.lastIndex)
-                return router.handle(stack.last())
+            if (stack.size <= 1) {
+                return false
             }
-            return false
+            stack.removeAt(stack.lastIndex)
+            creator.onPop()
+            router.handle(top())
+            return true
         }
 
         override fun popTo(route: URI): Boolean {
-            creator.onPop()
-            while (stack.size > 1 && stack.last() != route) {
-                stack.removeAt(stack.lastIndex)
-                if (!router.handle(stack.last())) {
-                    return false
-                }
+            if (!stack.contains(route)) {
+                return false
             }
+            while (stack.size > 1 && top() != route) {
+                stack.removeAt(stack.lastIndex)
+            }
+            creator.onPop()
+            router.handle(top())
             return true
         }
 
         override fun popToRoot(): Boolean {
-            return popTo(URI(""))
+            if (stack.size == 1) {
+                return false
+            }
+            return popTo(stack.first())
+        }
+
+        private fun hasRouter(route: URI): Boolean {
+            return router.routerFor(route) != null
         }
 
     }

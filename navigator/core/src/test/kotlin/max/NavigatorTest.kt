@@ -20,11 +20,13 @@ class NavigatorTest : Spek({
             }
         }
         shouldPush(navigator, URI("max://navigator/foo/bar"))
+        shouldPopToRoot(navigator, URI("max://navigator/foo"))
+        shouldPush(navigator, URI("max://navigator/foo/bar"))
         shouldPush(navigator, URI("max://navigator/foo/bar/baz"))
         shouldPop(navigator, URI("max://navigator/foo/bar"))
         shouldPopTo(navigator, URI("max://navigator/foo"))
         shouldNotPush(navigator, URI("max://navigator/bar/foo"))
-        shouldPopToRoot(navigator, URI("max://navigator/foo"))
+        shouldNotPopToRoot(navigator, URI("max://navigator/foo"))
         shouldPush(navigator, URI("max://navigator/foo/bar/asdf/"), "qux" to "asdf")
     }
 })
