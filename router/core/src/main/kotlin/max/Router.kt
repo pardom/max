@@ -8,7 +8,7 @@ interface Router<T : Router.Request> : RouterBody<T> {
 
     fun routerFor(route: URI): Router<T>?
 
-    fun match(route: URI): Map<String, Any?>
+    fun match(route: URI): Map<String, Any>
 
     fun matches(route: URI): Boolean
 
@@ -37,25 +37,29 @@ interface Router<T : Router.Request> : RouterBody<T> {
 
         val route: URI
 
-        val params: Map<String, Any?>
+        val params: Map<String, String>
+
+        val splat: Array<String>
 
         interface Creator<T : Request> {
 
-            fun create(route: URI, params: Map<String, Any?>): T
+            fun create(route: URI, params: Map<String, String>, splat: Array<String>): T
 
             companion object {
 
                 fun default(): Creator<Request.Default> = object : Creator<Request.Default> {
-                    override fun create(route: URI, params: Map<String, Any?>) = Request.Default(route, params)
+                    override fun create(route: URI, params: Map<String, String>, splat: Array<String>) =
+                        Request.Default(route, params, splat)
                 }
 
             }
 
         }
 
-        data class Default(
+        class Default(
             override val route: URI,
-            override val params: Map<String, Any?>
+            override val params: Map<String, String>,
+            override val splat: Array<String>
         ) : Request
 
     }
@@ -71,7 +75,8 @@ interface Router<T : Router.Request> : RouterBody<T> {
         override fun handle(route: URI): Boolean {
             val router = routerFor(route)
             if (router?.handler != null) {
-                val request = creator.create(route, router.match(route))
+                val params = router.match(route)
+                val request = creator.create(route, Matcher.params(params), Matcher.splat(params))
                 router.handler.handle(request)
                 return true
             }
@@ -91,7 +96,7 @@ interface Router<T : Router.Request> : RouterBody<T> {
             return null
         }
 
-        override fun match(route: URI): Map<String, Any?> {
+        override fun match(route: URI): Map<String, Any> {
             return matcher.match(route.path) + parseQuery(route)
         }
 
@@ -115,7 +120,7 @@ interface Router<T : Router.Request> : RouterBody<T> {
             return this
         }
 
-        private fun parseQuery(route: URI): Map<String, Any?> {
+        private fun parseQuery(route: URI): Map<String, String> {
             return route.query
                 ?.split(',')
                 ?.fold(emptyMap()) { map, param ->

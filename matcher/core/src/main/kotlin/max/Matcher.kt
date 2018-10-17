@@ -1,8 +1,11 @@
 package max
 
+import java.lang.IllegalArgumentException
+import javax.print.DocFlavor.STRING
+
 interface Matcher {
 
-    fun match(path: String): Map<String, Any?>
+    fun match(path: String): Map<String, Any>
 
     fun matches(path: String): Boolean
 
@@ -10,7 +13,7 @@ interface Matcher {
 
     private class Impl(val names: List<String>, val regex: Regex) : Matcher {
 
-        override fun match(path: String): Map<String, Any?> {
+        override fun match(path: String): Map<String, Any> {
             val match = regex.matchEntire(path) ?: return emptyMap()
             val groupValues = match.groupValues.drop(1)
             val map = mutableMapOf<String, Any>(SPLAT to arrayOf<String>())
@@ -121,6 +124,18 @@ interface Matcher {
 
         fun create(path: String): Matcher {
             return Impl(emptyList(), Regex("")).create(path)
+        }
+
+        fun params(params: Map<String, Any>): Map<String, String> {
+            @Suppress("UNCHECKED_CAST")
+            return (params - SPLAT) as? Map<String, String>
+                ?: throw IllegalArgumentException("Input contains non-string values: $params")
+        }
+
+        fun splat(params: Map<String, Any>): Array<String> {
+            @Suppress("UNCHECKED_CAST")
+            return params[SPLAT] as? Array<String>
+                ?: throw IllegalArgumentException("Input did not contain \"$SPLAT\" entry: $params")
         }
 
     }

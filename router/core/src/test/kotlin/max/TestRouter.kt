@@ -22,7 +22,7 @@ class TestRouter private constructor(
 
         override fun handle(request: Request) {
             this.route = request.route
-            this.params = request.params
+            this.params = request.params + (Router.SPLAT to request.splat)
         }
 
     }

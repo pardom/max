@@ -8,9 +8,11 @@ interface Navigator {
 
     fun top(): URI
 
-    fun params(): Map<String, Any?>
+    fun params(): Map<String, String>
 
-    fun param(name: String): Any?
+    fun param(name: String): String?
+
+    fun splat(): Array<String>
 
     fun set(vararg routes: URI): Boolean
 
@@ -28,19 +30,22 @@ interface Navigator {
         FORWARD, BACKWARD, REPLACE
     }
 
-    data class Request(
+    class Request(
         override val route: URI,
-        override val params: Map<String, Any?>,
+        override val params: Map<String, String>,
+        override val splat: Array<String>,
         val prevRoute: URI,
-        val prevParams: Map<String, Any?>,
+        val prevParams: Map<String, String>,
+        val prevSplat: Array<String>,
         val direction: Direction
     ) : Router.Request {
 
         class Creator : Router.Request.Creator<Request> {
 
-            private var route: URI = URI("")
-            private var params: Map<String, Any?> = emptyMap()
-            private var direction: Direction = Direction.REPLACE
+            private var route = URI("")
+            private var params = emptyMap<String, String>()
+            private var splat = emptyArray<String>()
+            private var direction = Direction.REPLACE
 
             fun onSet() {
                 direction = Direction.REPLACE
@@ -54,10 +59,11 @@ interface Navigator {
                 direction = Direction.BACKWARD
             }
 
-            override fun create(route: URI, params: Map<String, Any?>): Request {
-                val request = Request(route, params, this.route, this.params, direction)
+            override fun create(route: URI, params: Map<String, String>, splat: Array<String>): Request {
+                val request = Request(route, params, splat, this.route, this.params, this.splat, direction)
                 this.route = route
                 this.params = params
+                this.splat = splat
                 return request
             }
 
@@ -86,13 +92,18 @@ interface Navigator {
                 ?: throw IllegalStateException("Route stack is empty.")
         }
 
-        override fun params(): Map<String, Any?> {
-            return router.routerFor(top())?.match(top())
+        override fun params(): Map<String, String> {
+            val params = router.routerFor(top())?.match(top())
                 ?: throw IllegalStateException("Top route not found in router.")
+            return Matcher.params(params)
         }
 
-        override fun param(name: String): Any? {
+        override fun param(name: String): String? {
             return params()[name]
+        }
+
+        override fun splat(): Array<String> {
+            return Matcher.splat(params())
         }
 
         override fun set(vararg routes: URI): Boolean {
