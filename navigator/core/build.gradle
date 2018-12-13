@@ -1,6 +1,7 @@
 apply from: "$rootDir/deps.gradle"
 
 apply plugin: 'kotlin'
+apply plugin: 'jacoco'
 apply plugin: 'org.jetbrains.dokka'
 
 dependencies {
@@ -16,8 +17,19 @@ dependencies {
 
 test {
     useJUnitPlatform {
-        includeEngines 'spek'
+        includeEngines 'spek2'
     }
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = '0.8.2'
+}
+
+jacocoTestReport {
+    sourceSets sourceSets.main
+    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+    classDirectories = files(sourceSets.main.output)
 }
 
 dokka {
