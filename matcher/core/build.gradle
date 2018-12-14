@@ -2,6 +2,7 @@ apply from: "$rootDir/deps.gradle"
 
 apply plugin: 'kotlin'
 apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
 apply plugin: 'org.jetbrains.dokka'
 
 dependencies {
@@ -27,6 +28,15 @@ jacocoTestReport {
     sourceSets sourceSets.main
     sourceDirectories = files(sourceSets.main.allSource.srcDirs)
     classDirectories = files(sourceSets.main.output)
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "pardom_max"
+        property "sonar.organization", "pardom-github"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", "756d7d137242a4381eb5e0991895d581273495f9"
+    }
 }
 
 dokka {
