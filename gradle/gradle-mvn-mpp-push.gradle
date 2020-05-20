@@ -56,6 +56,7 @@ signing {
 
 publishing {
     publications.all {
+        artifactId POM_ARTIFACT_ID
         artifact javadocsJar
 
         pom.withXml {
