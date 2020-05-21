@@ -51,11 +51,11 @@ interface Router<T : Router.Request> {
 
         fun route(path: String, handler: Handler<T>)
 
-        fun route(path: String, handler: (T) -> Unit) = object : Handler<T> {
+        fun route(path: String, handler: (T) -> Unit) = route(path, object : Handler<T> {
             override fun handle(request: T) {
                 handler(request)
             }
-        }
+        })
 
     }
 
