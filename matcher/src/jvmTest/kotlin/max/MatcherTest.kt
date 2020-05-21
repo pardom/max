@@ -56,6 +56,7 @@ object MatcherTest : Spek({
     }
     matcher("/") {
         shouldMatch("/")
+        shouldNotMatch("//")
         shouldNotMatch("/foo")
     }
     matcher("/foo") {

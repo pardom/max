@@ -43,7 +43,9 @@ interface Matcher {
                 when (value.first()) {
                     '/' -> {
                         sb.append("\\/")
-                        sb.append(if (value.endsWith('?')) '*' else '+')
+                        if (value.length > 1 && value.endsWith('?')) {
+                            sb.append('*')
+                        }
                     }
                     ':' -> {
                         sb.append("([^\\/:\\*\\?]")
