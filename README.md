@@ -1,6 +1,6 @@
-[![Build Status](https://img.shields.io/travis/pardom/max.svg)](https://travis-ci.org/pardom/max/)
-[![Maven Central](https://img.shields.io/maven-central/v/com.michaelpardo/max.svg)](#download)
-[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.michaelpardo/max.svg)](#download)
+[![Build Status](https://img.shields.io/github/workflow/status/pardom/max/CD)](https://github.com/pardom/max/actions?query=workflow%3ACD)
+[![Maven Central](https://img.shields.io/maven-central/v/com.michaelpardo.max/navigator.svg)](#download)
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.michaelpardo.max/navigator.svg)](#download)
 [![License](https://img.shields.io/github/license/pardom/max.svg)](LICENSE.md)
 
 Max 🛸
