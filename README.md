@@ -29,8 +29,8 @@ Snapshots of the development version are available in [Sonatype's `snapshots` re
 
 [trimaxion]: http://aliens.wikia.com/wiki/Trimaxion_Drone_Ship
 [rfc3986]: https://tools.ietf.org/html/rfc3986
-[matcher]: matcher/README.MD
-[router]: router/README.MD
-[navigator]: navigator/README.MD
-[uri]: uri/README.MD
+[uri]: tree/master/uri
+[matcher]: tree/master/matcher
+[router]: tree/master/router
+[navigator]: tree/master/navigator
 [snapshots]: https://oss.sonatype.org/content/repositories/snapshots/
