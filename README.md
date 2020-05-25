@@ -6,21 +6,31 @@
 Max 🛸
 =========
 
-[Max][1]
-
-[documentation][2]
+[Max][trimaxion] is a suite of libraries which build upon each other to provide:
+ * [Uri][uri] - An [RFC 3986][rfc3986] URI implementation.
+ * [Matcher][matcher] - path matching and value extraction.
+ * [Router][router] - a [Uri] routing DSL and dispatcher.
+ * [Navigator][navigator] - a navigation stack of [Uri][uri]s.
 
 Download
 --------
 
-```groovy
-implementation 'com.michaelpardo:max-navigator:<version>' // includes router and matcher
-implementation 'com.michaelpardo:max-router:<version>'    // includes matcher
-implementation 'com.michaelpardo:max-matcher:<version>'
+```kotlin
+dependencies {
+    implementation("com.michaelpardo.max:uri:<version>")
+    implementation("com.michaelpardo.max:navigator:<version>")
+    implementation("com.michaelpardo.max:navigator:<version>")
+    implementation("com.michaelpardo.max:router:<version>")
+    implementation("com.michaelpardo.max:matcher:<version>")
+}
 ```
 
-Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snapshots].
 
-[1]: http://aliens.wikia.com/wiki/Trimaxion_Drone_Ship
-[2]: docs/max/index.md
-[snap]: https://oss.sonatype.org/content/repositories/snapshots/
+[trimaxion]: http://aliens.wikia.com/wiki/Trimaxion_Drone_Ship
+[rfc3986]: https://tools.ietf.org/html/rfc3986
+[matcher]: matcher/README.MD
+[router]: router/README.MD
+[navigator]: navigator/README.MD
+[uri]: uri/README.MD
+[snapshots]: https://oss.sonatype.org/content/repositories/snapshots/
