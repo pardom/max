@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
+import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeTargetPreset
 
 val GROUP: String by project
 val VERSION_NAME: String by project
@@ -37,7 +37,7 @@ kotlin {
 
     targets {
         presets
-            .filterIsInstance<KotlinNativeTargetPreset>()
+            .filterIsInstance<AbstractKotlinNativeTargetPreset<*>>()
             .forEach { preset ->
                 targetFromPreset(preset, preset.name) {
                     compilations["main"].source(sourceSets["nativeMain"])
