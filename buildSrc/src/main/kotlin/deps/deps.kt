@@ -6,7 +6,7 @@ object Dokka : Group("org.jetbrains.dokka", "0.10.1") {
     }
 }
 
-object Kotlin : Group("org.jetbrains.kotlin", "1.3.72") {
+object Kotlin : Group("org.jetbrains.kotlin", "1.4.21") {
     val StdLib = artifact("kotlin-stdlib")
 
     object Gradle {
