@@ -50,7 +50,8 @@ def selectArtifactId(project, type, defaultName) {
 }
 
 publishing {
-    publications.all {
+    publications {
+        artifact sourcesJar
         artifact javadocsJar
 
         def type = it.name
