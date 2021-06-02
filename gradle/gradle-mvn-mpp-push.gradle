@@ -19,11 +19,10 @@ dokka {
 }
 
 task emptySourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveAppendix.set("empty")
 }
 
 task javadocsJar(type: Jar, dependsOn: dokka) {
-    classifier = 'javadoc'
     from dokka.outputDirectory
 }
 
@@ -35,7 +34,7 @@ publishing {
     afterEvaluate {
         publications.getByName('kotlinMultiplatform') {
             // Source jars are only created for platforms, not the common artifact.
-            artifact emptySourcesJar
+            artifact(emptySourcesJar) { classifier 'javadoc' }
         }
     }
 }
