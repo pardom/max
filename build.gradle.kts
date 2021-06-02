@@ -1,6 +1,7 @@
 buildscript {
     repositories {
-        jcenter()
+        google()
+        mavenCentral()
     }
     dependencies {
         classpath(deps.Kotlin.Gradle.Plugin)
