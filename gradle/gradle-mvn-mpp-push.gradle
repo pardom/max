@@ -26,18 +26,40 @@ task javadocsJar(type: Jar, dependsOn: dokka) {
     from dokka.outputDirectory
 }
 
+def selectArtifactId(project, type, defaultName) {
+    def name = project.name
+    def isCommon = project.ext.has("commonStructure")
+    def commonIsRoot = project.ext.has("commonStructure") && project.ext.commonStructure
+    def hasNative = project.ext.has("hasNative") && project.ext.hasNative
+    switch (type) {
+        case 'metadata':
+            if (!isCommon) return "$name-$type"
+            return "$name-metadata"
+            break
+        case 'kotlinMultiplatform':
+            if (!hasNative) return "$name-kotlinMultiplatform"
+            return name
+            break
+        case 'jvm':
+            return commonIsRoot ? "$name-jvm" : "$name"
+            break
+        default:
+            return isCommon || hasNative ? defaultName : "$name"
+            break
+    }
+}
+
 publishing {
     publications.all {
         artifact javadocsJar
-    }
 
-    afterEvaluate {
-        publications.getByName('kotlinMultiplatform') {
-            artifact(emptySourcesJar) { classifier 'javadoc' }
-        }
+        def type = it.name
+        def id = selectArtifactId(project, type, it.artifactId)
+        it.artifactId = id
 
-        publications.getByName('jvm') {
-            artifact(emptySourcesJar) { classifier 'javadoc' }
+        if (name == "kotlinMultiplatform") {
+            it.artifact(emptyJar) { classifier 'javadoc' }
+            it.artifact(emptyJar) { classifier 'kdoc' }
         }
     }
 }
