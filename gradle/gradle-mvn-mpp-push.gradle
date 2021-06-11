@@ -57,9 +57,6 @@ def selectArtifactId(project, type, defaultName) {
 publishing {
     publications {
         pluginMaven(MavenPublication) {
-            artifact sourcesJar
-            artifact javadocsJar
-
             def type = it.name
             def id = selectArtifactId(project, type, it.artifactId)
             it.artifactId = id
