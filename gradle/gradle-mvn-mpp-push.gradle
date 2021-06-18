@@ -64,6 +64,9 @@ publishing {
             if (name == "kotlinMultiplatform") {
                 it.artifact(emptyJar) { classifier 'javadoc' }
                 it.artifact(emptyJar) { classifier 'kdoc' }
+            } else {
+                it.artifact(sourcesJar)
+                it.artifact(javadocsJar)
             }
         }
     }
