@@ -2,14 +2,6 @@ apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-}
-
-task emptyJar(type: Jar) {
-    archiveAppendix.set("empty")
-}
-
 def selectArtifactId(project, type, defaultName) {
     def name = project.name
     def isCommon = project.ext.has("commonStructure")
