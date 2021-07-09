@@ -8,13 +8,18 @@ plugins {
 kotlin {
     jvm()
 
-    val sdkName: String? = System.getenv("SDK_NAME")
-    val isiOSDevice = sdkName.orEmpty().startsWith("iphoneos")
-    if (isiOSDevice) {
-        iosArm64("iOS")
-    } else {
-        iosX64("iOS")
+    js {
+        browser()
+        nodejs()
     }
+
+    ios()
+    tvos()
+    watchos()
+
+    linuxX64()
+    macosX64()
+    mingwX64()
 
     sourceSets {
         val commonMain by getting {
