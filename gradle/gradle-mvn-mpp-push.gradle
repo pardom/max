@@ -6,16 +6,16 @@ apply plugin: 'signing'
 //    from sourceSets.main.allJava
 //}
 
-afterEvaluate {
-    task mainSourcesJar(type: Jar) {
-        archiveClassifier = 'sources'
-        if (isMultiplatform) {
-            from kotlin.sourceSets.commonMain.kotlin
-        } else {
-            from sourceSets.main.allSource
-        }
-    }
-}
+//afterEvaluate {
+//    task mainSourcesJar(type: Jar) {
+//        archiveClassifier = 'sources'
+//        if (isMultiplatform) {
+//            from kotlin.sourceSets.commonMain.kotlin
+//        } else {
+//            from sourceSets.main.allSource
+//        }
+//    }
+//}
 
 def selectArtifactId(project, type, defaultName) {
     def name = project.name
@@ -46,10 +46,7 @@ publishing {
             def type = it.name
             def id = selectArtifactId(project, type, it.artifactId)
             it.artifactId = id
-
-            if (name != "kotlinMultiplatform") {
-                it.artifact(sourcesJar)
-            }
+            it.artifact(sourcesJar)
         }
     }
 }
