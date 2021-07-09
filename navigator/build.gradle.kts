@@ -2,10 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeTargetPreset
 
 plugins {
     kotlin("multiplatform")
-}
-
-repositories {
-    jcenter()
+    id("com.vanniktech.maven.publish")
 }
 
 kotlin {
@@ -47,5 +44,3 @@ tasks.withType(Test::class) {
         includeEngines("spek2")
     }
 }
-
-apply("$rootDir/gradle/gradle-mvn-mpp-push.gradle")
