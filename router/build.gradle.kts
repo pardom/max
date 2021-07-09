@@ -8,6 +8,14 @@ plugins {
 kotlin {
     jvm()
 
+    val sdkName: String? = System.getenv("SDK_NAME")
+    val isiOSDevice = sdkName.orEmpty().startsWith("iphoneos")
+    if (isiOSDevice) {
+        iosArm64("iOS")
+    } else {
+        iosX64("iOS")
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -38,12 +46,6 @@ kotlin {
             }
     }
 }
-
-//signing {
-//    val SIGNING_PRIVATE_KEY: String? by project
-//    val SIGNING_PASSWORD: String? by project
-//    useInMemoryPgpKeys(SIGNING_PRIVATE_KEY, SIGNING_PASSWORD)
-//}
 
 tasks.withType(Sign::class) {
     enabled = false
