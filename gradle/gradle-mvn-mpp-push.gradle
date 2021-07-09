@@ -2,6 +2,21 @@ apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+afterEvaluate {
+    task mainSourcesJar(type: Jar) {
+        archiveClassifier = 'sources'
+        if (isMultiplatform) {
+            from kotlin.sourceSets.commonMain.kotlin
+        } else {
+            from sourceSets.main.allSource
+        }
+    }
+}
+
 def selectArtifactId(project, type, defaultName) {
     def name = project.name
     def isCommon = project.ext.has("commonStructure")
