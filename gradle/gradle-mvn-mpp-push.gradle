@@ -2,9 +2,9 @@ apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-}
+//task sourcesJar(type: Jar) {
+//    from sourceSets.main.allJava
+//}
 
 afterEvaluate {
     task mainSourcesJar(type: Jar) {
