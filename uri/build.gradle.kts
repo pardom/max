@@ -15,9 +15,9 @@ kotlin {
 
     val onPhone = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
     if (onPhone) {
-        iosArm64("ios")
+        iosArm64()
     } else {
-        iosX64("ios")
+        iosX64()
     }
 
     tvos()
