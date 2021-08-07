@@ -1,21 +1,25 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeTargetPreset
 
-val GROUP: String by project
-val VERSION_NAME: String by project
-
-group = GROUP
-version = VERSION_NAME
-
 plugins {
     kotlin("multiplatform")
-}
-
-repositories {
-    jcenter()
+    id("com.vanniktech.maven.publish")
 }
 
 kotlin {
     jvm()
+
+    js {
+        browser()
+        nodejs()
+    }
+
+    ios()
+    tvos()
+    watchos()
+
+    linuxX64()
+    macosX64()
+    mingwX64()
 
     sourceSets {
         val commonMain by getting {
@@ -48,10 +52,12 @@ kotlin {
     }
 }
 
+tasks.withType(Sign::class) {
+    enabled = false
+}
+
 tasks.withType(Test::class) {
     useJUnitPlatform {
         includeEngines("spek2")
     }
 }
-
-apply("$rootDir/gradle/gradle-mvn-mpp-push.gradle")
