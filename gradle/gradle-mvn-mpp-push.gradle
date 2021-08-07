@@ -1,7 +1,7 @@
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
 
-def selectArtifactId(project, type, defaultName) {
+static def selectArtifactId(project, type, defaultName) {
     def name = project.name
     def isCommon = project.ext.has("commonStructure")
     def commonIsRoot = project.ext.has("commonStructure") && project.ext.commonStructure
